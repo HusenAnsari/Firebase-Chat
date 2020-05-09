@@ -19,7 +19,7 @@ class _AuthFormState extends State<AuthForm> {
   var _userPassword = '';
 
   void _trySubmit() {
-    // to validate validation of form
+    // to validate validation of of Form()'s TextFormField()
     final isValid = _formKey.currentState.validate();
 
     // Close soft keyboard if open when we click on submit button

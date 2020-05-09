@@ -1,6 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../widgets/messages.dart';
+import '../widgets/new_message.dart';
 
 class ChatScreen extends StatelessWidget {
   @override
@@ -37,34 +39,15 @@ class ChatScreen extends StatelessWidget {
         ],
       ),
       // StreamBuilder provide by FireStore
-      body: StreamBuilder(
-        stream: Firestore.instance
-            .collection('chats/zIebG2EiCXXIOlFrJOdf/messages')
-            // snapshots() return stream that allow as to get latest data everytime
-            .snapshots(),
-        builder: (context, streamSnapShot) {
-          if (streamSnapShot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          final document = streamSnapShot.data.documents;
-          return ListView.builder(
-            itemCount: document.length,
-            itemBuilder: (context, index) => Container(
-              padding: EdgeInsets.all(8),
-              child: Text(document[index]['text']),
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: Messages(),
             ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          Firestore.instance
-              .collection('chats/zIebG2EiCXXIOlFrJOdf/messages')
-              .add({'text': 'This is from App'});
-        },
+            NewMessage(),
+          ],
+        ),
       ),
     );
   }
