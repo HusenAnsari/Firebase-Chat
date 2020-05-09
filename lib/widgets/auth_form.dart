@@ -1,9 +1,18 @@
+import 'dart:io';
+
+import 'package:firebasechat/widgets/user_image_picker.dart';
 import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
   final bool isLoading;
-  final void Function(String email, String username, String password,
-      bool isLogin, BuildContext ctx) submitFunction;
+  final void Function(
+    String email,
+    String username,
+    String password,
+    File image,
+    bool isLogin,
+    BuildContext ctx,
+  ) submitFunction;
 
   AuthForm(this.submitFunction, this.isLoading);
 
@@ -17,6 +26,11 @@ class _AuthFormState extends State<AuthForm> {
   var _userName = '';
   var _userEmail = '';
   var _userPassword = '';
+  File _userImageFile;
+
+  void _pickedImage(File image) {
+    _userImageFile = image;
+  }
 
   void _trySubmit() {
     // to validate validation of of Form()'s TextFormField()
@@ -25,11 +39,27 @@ class _AuthFormState extends State<AuthForm> {
     // Close soft keyboard if open when we click on submit button
     FocusScope.of(context).unfocus();
 
+    if (_userImageFile == null && !_isLogin) {
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please pick image'),
+          backgroundColor: Theme.of(context).errorColor,
+        ),
+      );
+      return;
+    }
+
     if (isValid) {
       // Trigger all save() of Form()'s TextFormField()
       _formKey.currentState.save();
-      widget.submitFunction(_userEmail.trim(), _userName.trim(),
-          _userPassword.trim(), _isLogin, context);
+      widget.submitFunction(
+        _userEmail.trim(),
+        _userName.trim(),
+        _userPassword.trim(),
+        _userImageFile,
+        _isLogin,
+        context,
+      );
     }
   }
 
@@ -45,6 +75,8 @@ class _AuthFormState extends State<AuthForm> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
+                if (!_isLogin) UserImagePicker(_pickedImage),
+
                 TextFormField(
                   // we need to add key if we have multiple same field
                   key: ValueKey('email'),
