@@ -52,14 +52,17 @@ class _AuthScreenState extends State<AuthScreen> {
 
         await ref.putFile(image).onComplete;
 
-        // Store extra data to firestore.
-        // Here we are storing username to firestore
+        // TO get uploaded image url
+        final url = await ref.getDownloadURL();
+
+        // Store data to firestore.
         await Firestore.instance
             .collection('users')
             .document(authResult.user.uid)
             .setData({
           'username': username,
           'email': email,
+          'image_url': url,
         });
       }
       // on is use to set specific exception.
